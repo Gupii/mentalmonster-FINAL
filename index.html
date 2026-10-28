@@ -317,6 +317,36 @@
 
         // Init on load
         updateBadges();
+
+        // Stripe Live Checkout Integration
+        const checkoutBtns = document.querySelectorAll('.checkout-btn');
+        checkoutBtns.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (cart.length === 0) return;
+                
+                btn.textContent = 'PROCESSING...';
+                
+                try {
+                    const response = await fetch('https://mentalmonster-backend.onrender.com/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cart: cart })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.url) {
+                        window.location.href = data.url; // Redirects to Stripe
+                    } else {
+                        console.error('Stripe Error:', data.error);
+                        btn.textContent = 'CHECKOUT FAILED';
+                    }
+                } catch (e) {
+                    console.error('Network Error:', e);
+                    btn.textContent = 'SERVER ERROR';
+                }
+            });
+        });
     </script>
 </body>
 </html>

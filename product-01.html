@@ -137,8 +137,7 @@
                 <span>SUBTOTAL:</span>
                 <span id="cart-total-price">$0.00 SGD</span>
             </div>
-            <!-- The button now has the proper ID -->
-            <button type="button" class="checkout-btn" id="checkout-btn">CHECKOUT</button>
+            <button type="button" class="checkout-btn">CHECKOUT</button>
         </div>
     </div>
 
@@ -196,11 +195,13 @@
             favLiked.style.display = 'block';
         }
 
+        // Favourites Image Button Logic (Prevent Redirect)
         favBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            e.stopPropagation(); 
+            e.stopPropagation(); // Prevents clicking the button from bubbling up to any wrapping forms
 
             isFavourited = !isFavourited;
+            
             favBtn.classList.remove('animating');
             void favBtn.offsetWidth; 
             favBtn.classList.add('animating');
@@ -224,6 +225,7 @@
             renderFavs();
         });
 
+        // UI Selectors
         const sizeBtns = document.querySelectorAll('.size-btn');
         const colorSwatches = document.querySelectorAll('.color-swatch');
         const mainImage = document.getElementById('main-product-image');
@@ -259,6 +261,7 @@
         qtyMinus.addEventListener('click', () => { if (currentQty > 1) { currentQty--; qtyVal.textContent = currentQty; }});
         qtyPlus.addEventListener('click', () => { currentQty++; qtyVal.textContent = currentQty; });
 
+        // Add to Bag Logic
         const addToBagBtn = document.getElementById('add-to-bag-btn');
         const errorMsg = document.getElementById('selection-error');
         let errorTimeout;
@@ -299,6 +302,7 @@
             renderCart();
         });
 
+        // Drawer Controls
         const cartDrawer = document.getElementById('cart-drawer');
         const cartOverlay = document.getElementById('cart-overlay');
         const openCartBtn = document.getElementById('open-cart');
@@ -320,12 +324,18 @@
         closeFavBtn.addEventListener('click', toggleFavs);
         favOverlay.addEventListener('click', toggleFavs);
 
+        // Rendering & Swipe Logic
         const cartItemsContainer = document.getElementById('cart-items-container');
         const cartTotalRow = document.getElementById('cart-total-row');
         const cartTotalPrice = document.getElementById('cart-total-price');
         const favItemsContainer = document.getElementById('fav-items-container');
 
-        function removeCartItem(index) { cart.splice(index, 1); saveData(); renderCart(); }
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            saveData();
+            renderCart();
+        }
+
         function removeFavItem(id) {
             favs = favs.filter(item => item.id !== id);
             if (id === 'duality-bra') {
@@ -393,7 +403,8 @@
         function initSwipeables() {
             const swipeables = document.querySelectorAll('.swipeable');
             swipeables.forEach(el => {
-                let startX = 0; let currentX = 0;
+                let startX = 0;
+                let currentX = 0;
                 el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
                 el.addEventListener('touchmove', e => {
                     currentX = e.touches[0].clientX;
@@ -408,38 +419,38 @@
             });
         }
 
-        // Stripe Checkout Logic (Talks to server.js on 127.0.0.1)
-        const checkoutBtn = document.getElementById('checkout-btn');
-        if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', async () => {
+        // Init on load
+        updateBadges();
+
+        // Stripe Live Checkout Integration
+        const checkoutBtns = document.querySelectorAll('.checkout-btn');
+        checkoutBtns.forEach(btn => {
+            btn.addEventListener('click', async () => {
                 if (cart.length === 0) return;
                 
-                checkoutBtn.textContent = 'REDIRECTING...';
-                checkoutBtn.style.opacity = '0.7';
-
+                btn.textContent = 'PROCESSING...';
+                
                 try {
-                    const response = await fetch('http://127.0.0.1:4242/create-checkout-session', {
+                    const response = await fetch('https://mentalmonster-backend.onrender.com/create-checkout-session', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ cart: cart })
                     });
                     
-                    const session = await response.json();
+                    const data = await response.json();
                     
-                    if (session.url) {
-                        window.location.href = session.url; // Redirect to Stripe
+                    if (data.url) {
+                        window.location.href = data.url; // Redirects to Stripe
                     } else {
-                        checkoutBtn.textContent = 'SERVER ERROR';
+                        console.error('Stripe Error:', data.error);
+                        btn.textContent = 'CHECKOUT FAILED';
                     }
-                } catch (error) {
-                    console.error('Checkout error:', error);
-                    checkoutBtn.textContent = 'CHECKOUT FAILED';
-                    setTimeout(() => { checkoutBtn.textContent = 'CHECKOUT'; checkoutBtn.style.opacity = '1'; }, 2000);
+                } catch (e) {
+                    console.error('Network Error:', e);
+                    btn.textContent = 'SERVER ERROR';
                 }
             });
-        }
-
-        updateBadges();
+        });
     </script>
 </body>
 </html>
