@@ -63,9 +63,9 @@ app.post('/create-checkout-session', async (req, res) => {
                     },
                 },
             ],
-            // We will update these local URLs to your live domain in the next step
-            success_url: 'http://127.0.0.1:5500/success.html', 
-            cancel_url: 'http://127.0.0.1:5500/index.html',
+            // Updated to your live Vercel domain
+            success_url: 'https://mentalmonster-final.vercel.app/success.html', 
+            cancel_url: 'https://mentalmonster-final.vercel.app/index.html',
         });
 
         res.json({ url: session.url });
