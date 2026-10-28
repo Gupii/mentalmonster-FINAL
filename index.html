@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Monster | Apparel</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+        <filter id="crisp-lace">
+            <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0"/>
+        </filter>
+    </svg>
+
+    <div class="lace-frame" aria-hidden="true">
+        <div class="lace-edge lace-left"></div>
+        <div class="lace-edge lace-right"></div>
+    </div>
+
+    <div class="page-wrapper">
+        
+        <header>
+            <nav class="nav-left">
+                <a href="index.html">SHOP</a>
+                <a href="index.html">COLLECTIONS</a>
+                <a href="index.html">ABOUT</a>
+            </nav>
+            <div class="logo-container">
+                <a href="index.html"><img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792925301/logo_website_nbg.png" alt="Mental Monster Logo"></a>
+            </div>
+            <nav class="nav-right">
+                <a href="#" aria-label="Favourites" class="cart-icon-wrapper" id="open-favs">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="cart-badge fav-badge" id="header-fav-badge">0</span>
+                </a>
+                <a href="#" aria-label="Account"><i class="fa-regular fa-user"></i></a>
+                <a href="#" aria-label="Bag" class="cart-icon-wrapper" id="open-cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero-quote">
+                <div class="diamond-divider-container">
+                    <div class="line-left"></div>
+                    <div class="diamond">♦</div>
+                    <div class="line-right"></div>
+                </div>
+                <p>stick through the necessary process despite all the hurdles that awaits to get to get everything you deserve &lt;3</p>
+                <div class="diamond-divider-container">
+                    <div class="line-left"></div>
+                    <div class="diamond">♦</div>
+                    <div class="line-right"></div>
+                </div>
+            </section>
+
+            <section class="collections-grid">
+                
+                <div class="card relentless-card">
+                    <div class="card-content centered">
+                        <span class="the-prefix">THE</span>
+                        <h2>RELENTLESS</h2>
+                        <div class="diamond-divider-container small">
+                            <div class="line-left"></div>
+                            <div class="diamond">♦</div>
+                            <div class="line-right"></div>
+                        </div>
+                        <span class="card-subtitle">COMING SOON</span>
+                    </div>
+                </div>
+
+                <!-- Cleaned Velvet Armour Card (Duality entirely removed) -->
+                <a href="product-01.html" class="card velvet-card">
+                    <div class="card-content bottom-aligned shadow-text">
+                        <h2 class="clean-card-title" style="margin-bottom: 0;">VELVET ARMOUR</h2>
+                        <span class="card-subtitle">COLLECTION</span>
+                        <div class="diamond-divider-container small">
+                            <div class="line-left"></div>
+                            <div class="diamond">♦</div>
+                            <div class="line-right"></div>
+                        </div>
+                        <span class="shop-link">SHOP COLLECTION &rarr;</span>
+                    </div>
+                </a>
+
+            </section>
+
+            <div class="bottom-mark">
+                <div class="line"></div>
+                <div class="diamond">♦</div>
+                <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792999234/57.png" alt="M Mark" class="mark-image">
+                <div class="diamond">♦</div>
+                <div class="line"></div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-left">
+                    <p>&copy; 2026 mentalmonster. All rights reserved.</p>
+                    <p>mentalmonster Pte. Ltd.</p>
+                    <br>
+                    <p class="legal-links">
+                        <a href="#" id="open-tos">Terms of Service</a> | 
+                        <a href="#" id="open-privacy">Privacy Policy</a>
+                    </p>
+                </div>
+                <div class="footer-right">
+                    <h4 class="connect-heading">Connect with us</h4>
+                    <p>email: <a href="mailto:inquiries@mentalmonster.com">inquiries@mentalmonster.com</a></p>
+                    <p>number: +65 8686 5419</p>
+                    <p>socials: <a href="https://www.tiktok.com/@mentalmonster.sg" target="_blank">tiktok</a> | <a href="https://www.instagram.com/mentalmonster.sg/?hl=en" target="_blank">instagram</a></p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Cream Cart Drawer -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h2>YOUR BAG</h2>
+            <button type="button" id="close-cart">&times;</button>
+        </div>
+        <div id="cart-items-container" class="cart-items">
+            <p class="empty-cart-msg">Your bag is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row" id="cart-total-row" style="display:none; display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; font-size: 1.2rem;">
+                <span>SUBTOTAL:</span>
+                <span id="cart-total-price">$0.00 SGD</span>
+            </div>
+            <button type="button" class="checkout-btn">CHECKOUT</button>
+        </div>
+    </div>
+
+    <!-- Cream Favourites Drawer -->
+    <div class="cart-overlay" id="fav-overlay"></div>
+    <div class="cart-drawer" id="fav-drawer">
+        <div class="cart-header">
+            <h2>FAVOURITES</h2>
+            <button type="button" id="close-favs">&times;</button>
+        </div>
+        <div id="fav-items-container" class="cart-items">
+            <p class="empty-cart-msg">Your favourites list is empty.</p>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="tos-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Terms of Service</h2>
+        </div>
+    </div>
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Privacy Policy</h2>
+        </div>
+    </div>
+
+    <script>
+        // Shared Memory (LocalStorage)
+        let cart = JSON.parse(localStorage.getItem('mm_cart')) || [];
+        let favs = JSON.parse(localStorage.getItem('mm_favs')) || [];
+        const headerFavBadge = document.getElementById('header-fav-badge');
+        const cartBadge = document.getElementById('cart-badge');
+
+        function saveData() {
+            localStorage.setItem('mm_cart', JSON.stringify(cart));
+            localStorage.setItem('mm_favs', JSON.stringify(favs));
+            updateBadges();
+        }
+
+        function updateBadges() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            if (totalItems > 0) {
+                cartBadge.textContent = totalItems;
+                cartBadge.classList.add('active');
+            } else {
+                cartBadge.classList.remove('active');
+            }
+
+            if (favs.length > 0) {
+                headerFavBadge.textContent = favs.length;
+                headerFavBadge.classList.add('active');
+            } else {
+                headerFavBadge.classList.remove('active');
+            }
+        }
+
+        // Drawer Controls
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const openCartBtn = document.getElementById('open-cart');
+        const closeCartBtn = document.getElementById('close-cart');
+        
+        const favDrawer = document.getElementById('fav-drawer');
+        const favOverlay = document.getElementById('fav-overlay');
+        const openFavBtn = document.getElementById('open-favs');
+        const closeFavBtn = document.getElementById('close-favs');
+
+        function toggleCart() { cartDrawer.classList.toggle('open'); cartOverlay.classList.toggle('show'); renderCart(); }
+        function toggleFavs() { favDrawer.classList.toggle('open'); favOverlay.classList.toggle('show'); renderFavs(); }
+
+        openCartBtn.addEventListener('click', (e) => { e.preventDefault(); toggleCart(); });
+        closeCartBtn.addEventListener('click', toggleCart);
+        cartOverlay.addEventListener('click', toggleCart);
+
+        openFavBtn.addEventListener('click', (e) => { e.preventDefault(); toggleFavs(); });
+        closeFavBtn.addEventListener('click', toggleFavs);
+        favOverlay.addEventListener('click', toggleFavs);
+
+        // Rendering & Swipe Logic
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartTotalRow = document.getElementById('cart-total-row');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const favItemsContainer = document.getElementById('fav-items-container');
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            saveData();
+            renderCart();
+        }
+
+        function removeFavItem(id) {
+            favs = favs.filter(item => item.id !== id);
+            saveData();
+            renderFavs();
+        }
+
+        function renderCart() {
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="empty-cart-msg">Your bag is empty.</p>';
+                cartTotalRow.style.display = 'none';
+                return;
+            }
+            let totalSum = 0;
+            cartItemsContainer.innerHTML = cart.map((item, index) => {
+                totalSum += (item.price * item.qty);
+                return `
+                <div class="cart-item-wrapper">
+                    <div class="cart-item-action">
+                        <button type="button" class="remove-btn" onclick="removeCartItem(${index})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="cart-item swipeable">
+                        <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <p class="cart-variant">Size: <strong>${item.size}</strong> | Qty: <strong>${item.qty}</strong></p>
+                            <p class="cart-variant">Colour: <strong>${item.color}</strong></p>
+                            <p class="cart-price">$${(item.price * item.qty).toFixed(2)} SGD</p>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+            cartTotalRow.style.display = 'flex';
+            cartTotalPrice.textContent = '$' + totalSum.toFixed(2) + ' SGD';
+            initSwipeables();
+        }
+
+        function renderFavs() {
+            if (favs.length === 0) {
+                favItemsContainer.innerHTML = '<p class="empty-cart-msg">Your favourites list is empty.</p>';
+                return;
+            }
+            favItemsContainer.innerHTML = favs.map(item => `
+                <div class="cart-item-wrapper">
+                    <div class="cart-item-action">
+                        <button type="button" class="remove-btn" onclick="removeFavItem('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <a href="product-01.html" class="cart-item swipeable fav-link">
+                        <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <p class="cart-price">${item.price}</p>
+                            <p class="click-to-view">Click to view listing &rarr;</p>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+            initSwipeables();
+        }
+
+        function initSwipeables() {
+            const swipeables = document.querySelectorAll('.swipeable');
+            swipeables.forEach(el => {
+                let startX = 0;
+                let currentX = 0;
+                el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+                el.addEventListener('touchmove', e => {
+                    currentX = e.touches[0].clientX;
+                    let diff = startX - currentX;
+                    if (diff > 0 && diff < 80) { el.style.transform = `translateX(-${diff}px)`; }
+                }, {passive: true});
+                el.addEventListener('touchend', e => {
+                    let diff = startX - currentX;
+                    if (diff > 40) el.style.transform = `translateX(-80px)`;
+                    else el.style.transform = `translateX(0)`;
+                });
+            });
+        }
+
+        // Init on load
+        updateBadges();
+    </script>
+</body>
+</html>

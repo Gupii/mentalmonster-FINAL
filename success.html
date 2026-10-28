@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Monster | Success</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; flex-direction: column;">
+
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+        <filter id="crisp-lace">
+            <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0"/>
+        </filter>
+    </svg>
+
+    <div class="lace-frame" aria-hidden="true">
+        <div class="lace-edge lace-left"></div>
+        <div class="lace-edge lace-right"></div>
+    </div>
+
+    <div style="max-width: 600px; padding: 2rem;">
+        <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792925301/logo_website_nbg.png" alt="Mental Monster" style="width: 200px; margin-bottom: 2rem;">
+        
+        <p style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; line-height: 1.6; color: var(--text-light); margin-bottom: 3rem;">
+            your order is being processed, you will receive a confirmation on your email shortly. thanks for buying from MentalMonster
+        </p>
+
+        <a href="index.html" class="btn-add-bag" style="text-decoration: none; display: inline-flex; width: auto; padding: 1rem 3rem;">
+            <span>RETURN TO SHOP</span>
+        </a>
+    </div>
+
+    <script>
+        // Empty the shopping cart so they start fresh
+        localStorage.removeItem('mm_cart');
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const storeItems = new Map([
+    ['Duality Sports Bra', { priceInCents: 4000 }]
+]);
+
+app.post('/create-checkout-session', async (req, res) => {
+    try {
+        const { cart } = req.body;
+
+        const lineItems = cart.map(item => {
+            const storeItem = storeItems.get(item.name);
+            if (!storeItem) throw new Error(`Product ${item.name} not found.`);
+
+            return {
+                price_data: {
+                    currency: 'sgd',
+                    product_data: {
+                        name: item.name,
+                        images: [item.img],
+                        description: `Size: ${item.size} | Colour: ${item.color}`, 
+                    },
+                    unit_amount: storeItem.priceInCents,
+                },
+                quantity: item.qty,
+            };
+        });
+
+        const session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            line_items: lineItems,
+            
+            payment_intent_data: {
+                metadata: {
+                    order_summary: cart.map(item => `${item.qty}x ${item.name} (Size: ${item.size}, Colour: ${item.color})`).join(' | ')
+                }
+            },
+
+            phone_number_collection: { enabled: true },
+            shipping_address_collection: { allowed_countries: ['SG'] },
+            shipping_options: [
+                {
+                    shipping_rate_data: {
+                        type: 'fixed_amount',
+                        fixed_amount: { amount: 500, currency: 'sgd' },
+                        display_name: 'Standard Delivery',
+                        delivery_estimate: { minimum: { unit: 'business_day', value: 3 }, maximum: { unit: 'business_day', value: 5 } }
+                    },
+                },
+                {
+                    shipping_rate_data: {
+                        type: 'fixed_amount',
+                        fixed_amount: { amount: 1500, currency: 'sgd' },
+                        display_name: 'Next Day Express',
+                        delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 1 } }
+                    },
+                },
+            ],
+            // We will update these local URLs to your live domain in the next step
+            success_url: 'http://127.0.0.1:5500/success.html', 
+            cancel_url: 'http://127.0.0.1:5500/index.html',
+        });
+
+        res.json({ url: session.url });
+    } catch (e) {
+        console.error("STRIPE ERROR:", e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.listen(4242, () => console.log('Mental Monster Payment Server running on port 4242'));

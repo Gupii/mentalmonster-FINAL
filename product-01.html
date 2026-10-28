@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Monster | Duality Sports Bra</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+        <filter id="crisp-lace">
+            <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0"/>
+        </filter>
+    </svg>
+
+    <div class="lace-frame" aria-hidden="true">
+        <div class="lace-edge lace-left"></div>
+        <div class="lace-edge lace-right"></div>
+    </div>
+
+    <div class="page-wrapper">
+        
+        <header>
+            <nav class="nav-left">
+                <a href="index.html">SHOP</a>
+                <a href="index.html">COLLECTIONS</a>
+                <a href="index.html">ABOUT</a>
+            </nav>
+            <div class="logo-container">
+                <a href="index.html"><img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792925301/logo_website_nbg.png" alt="Mental Monster Logo"></a>
+            </div>
+            <nav class="nav-right">
+                <a href="#" aria-label="Favourites" class="cart-icon-wrapper" id="open-favs">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="cart-badge fav-badge" id="header-fav-badge">0</span>
+                </a>
+                <a href="#" aria-label="Account"><i class="fa-regular fa-user"></i></a>
+                <a href="#" aria-label="Bag" class="cart-icon-wrapper" id="open-cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="product-section">
+                <!-- Product Gallery -->
+                <div class="product-gallery">
+                    <div class="listing-image-container">
+                        <!-- Bulletproof Favourites Button -->
+                        <button type="button" class="image-fav-btn" id="image-fav-btn" aria-label="Add to favourites">
+                            <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792933527/image-removebg-preview3.png" alt="Unliked" class="fav-icon-unliked">
+                            <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792933528/image-removebg-preview.png" alt="Liked" class="fav-icon-liked" style="display: none;">
+                        </button>
+                        
+                        <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1793001294/photo_2026-10-26_15-52-31-removebg-preview.png" alt="Duality Sports Bra" class="transparent-product-img" id="main-product-image">
+                    </div>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="product-details">
+                    <div class="breadcrumb"><span>VELVET ARMOUR COLLECTION</span></div>
+                    
+                    <h1 class="product-title-clean">Duality</h1>
+                    <h2 class="product-subtitle-clean">SPORTS BRA</h2>
+                    
+                    <p class="price-clean">$40.00 SGD</p>
+                    
+                    <div class="variant-selector">
+                        <p class="variant-label">SIZE</p>
+                        <div class="sizes" id="size-options">
+                            <button type="button" class="size-btn">S</button>
+                            <button type="button" class="size-btn">M</button>
+                            <button type="button" class="size-btn">L</button>
+                            <button type="button" class="size-btn">XL</button>
+                        </div>
+                    </div>
+
+                    <div class="variant-selector">
+                        <p class="variant-label">COLOUR: <span id="color-label-display" style="color: var(--text-light); font-weight: 500;">COCOA CREME</span></p>
+                        <div class="colors-container" id="color-options">
+                            <div class="color-swatch round" style="background-color: #872B2D;" data-name="Dark Cherry" data-image="https://res.cloudinary.com/bqio04wg/image/upload/v1793040257/photo_2026-10-27_02-42-42-removebg-preview.png"></div>
+                            <div class="color-swatch round" style="background-color: #5A5444;" data-name="Olive Veil" data-image="https://res.cloudinary.com/bqio04wg/image/upload/v1793081803/30b4ddd1-cedc-4910-bc84-a195e6891bca-removebg-preview.png"></div>
+                            <div class="color-swatch round" style="background-color: #C88E88;" data-name="Rosewood" data-image="https://res.cloudinary.com/bqio04wg/image/upload/v1793040256/photo_2026-10-27_02-42-37-removebg-preview.png"></div>
+                            <div class="color-swatch round" style="background-color: #A9C4D7;" data-name="Midnight Mist" data-image="https://res.cloudinary.com/bqio04wg/image/upload/v1793040257/photo_2026-10-27_02-42-44-removebg-preview.png"></div>
+                            <div class="color-swatch round active" style="background-color: #FEECC5;" data-name="Cocoa Creme" data-image="https://res.cloudinary.com/bqio04wg/image/upload/v1793001294/photo_2026-10-26_15-52-31-removebg-preview.png"></div>
+                        </div>
+                    </div>
+
+                    <div class="qty-selector">
+                        <button type="button" id="qty-minus"><i class="fa-solid fa-minus"></i></button>
+                        <span id="qty-val">1</span>
+                        <button type="button" id="qty-plus"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    
+                    <div id="selection-error" class="error-msg"></div>
+                    
+                    <button type="button" class="btn-add-bag" id="add-to-bag-btn">
+                        <span>ADD TO BAG</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-left">
+                    <p>&copy; 2026 mentalmonster. All rights reserved.</p>
+                    <p>mentalmonster Pte. Ltd.</p>
+                </div>
+                <div class="footer-right">
+                    <h4 class="connect-heading">Connect with us</h4>
+                    <p>email: inquiries@mentalmonster.com</p>
+                    <p>number: +65 8686 5419</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Cream Cart Drawer -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h2>YOUR BAG</h2>
+            <button type="button" id="close-cart">&times;</button>
+        </div>
+        <div id="cart-items-container" class="cart-items"></div>
+        <div class="cart-footer">
+            <div class="cart-total-row" id="cart-total-row" style="display:none; display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; font-size: 1.2rem;">
+                <span>SUBTOTAL:</span>
+                <span id="cart-total-price">$0.00 SGD</span>
+            </div>
+            <!-- The button now has the proper ID -->
+            <button type="button" class="checkout-btn" id="checkout-btn">CHECKOUT</button>
+        </div>
+    </div>
+
+    <!-- Cream Favourites Drawer -->
+    <div class="cart-overlay" id="fav-overlay"></div>
+    <div class="cart-drawer" id="fav-drawer">
+        <div class="cart-header">
+            <h2>FAVOURITES</h2>
+            <button type="button" id="close-favs">&times;</button>
+        </div>
+        <div id="fav-items-container" class="cart-items"></div>
+    </div>
+
+    <script>
+        // Shared Memory
+        let cart = JSON.parse(localStorage.getItem('mm_cart')) || [];
+        let favs = JSON.parse(localStorage.getItem('mm_favs')) || [];
+        
+        let selectedSize = null;
+        let selectedColor = 'Cocoa Creme'; 
+        let currentQty = 1;
+        let isFavourited = favs.some(f => f.id === 'duality-bra'); 
+
+        const headerFavBadge = document.getElementById('header-fav-badge');
+        const cartBadge = document.getElementById('cart-badge');
+        const favBtn = document.getElementById('image-fav-btn');
+        const favUnliked = favBtn.querySelector('.fav-icon-unliked');
+        const favLiked = favBtn.querySelector('.fav-icon-liked');
+
+        function saveData() {
+            localStorage.setItem('mm_cart', JSON.stringify(cart));
+            localStorage.setItem('mm_favs', JSON.stringify(favs));
+            updateBadges();
+        }
+
+        function updateBadges() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            if (totalItems > 0) {
+                cartBadge.textContent = totalItems;
+                cartBadge.classList.add('active');
+            } else {
+                cartBadge.classList.remove('active');
+            }
+
+            if (favs.length > 0) {
+                headerFavBadge.textContent = favs.length;
+                headerFavBadge.classList.add('active');
+            } else {
+                headerFavBadge.classList.remove('active');
+            }
+        }
+
+        if (isFavourited) {
+            favUnliked.style.display = 'none';
+            favLiked.style.display = 'block';
+        }
+
+        favBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); 
+
+            isFavourited = !isFavourited;
+            favBtn.classList.remove('animating');
+            void favBtn.offsetWidth; 
+            favBtn.classList.add('animating');
+            
+            if (isFavourited) {
+                favUnliked.style.display = 'none';
+                favLiked.style.display = 'block';
+                favs.push({
+                    id: 'duality-bra',
+                    name: 'Duality Sports Bra',
+                    price: '$40.00 SGD',
+                    img: 'https://res.cloudinary.com/bqio04wg/image/upload/v1793001294/photo_2026-10-26_15-52-31-removebg-preview.png' 
+                });
+            } else {
+                favUnliked.style.display = 'block';
+                favLiked.style.display = 'none';
+                favs = favs.filter(item => item.id !== 'duality-bra');
+            }
+            
+            saveData();
+            renderFavs();
+        });
+
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        const mainImage = document.getElementById('main-product-image');
+        const colorLabelDisplay = document.getElementById('color-label-display');
+        const qtyMinus = document.getElementById('qty-minus');
+        const qtyPlus = document.getElementById('qty-plus');
+        const qtyVal = document.getElementById('qty-val');
+        
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sizeBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedSize = btn.textContent;
+            });
+        });
+
+        colorSwatches.forEach(swatch => {
+            swatch.addEventListener('click', () => {
+                colorSwatches.forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+                selectedColor = swatch.getAttribute('data-name');
+                colorLabelDisplay.textContent = selectedColor.toUpperCase();
+                const newImgSrc = swatch.getAttribute('data-image');
+                
+                mainImage.style.opacity = 0; 
+                setTimeout(() => {
+                    mainImage.src = newImgSrc;
+                    mainImage.style.opacity = 1;
+                }, 200);
+            });
+        });
+
+        qtyMinus.addEventListener('click', () => { if (currentQty > 1) { currentQty--; qtyVal.textContent = currentQty; }});
+        qtyPlus.addEventListener('click', () => { currentQty++; qtyVal.textContent = currentQty; });
+
+        const addToBagBtn = document.getElementById('add-to-bag-btn');
+        const errorMsg = document.getElementById('selection-error');
+        let errorTimeout;
+
+        addToBagBtn.addEventListener('click', () => {
+            if (!selectedSize || !selectedColor) {
+                errorMsg.textContent = (!selectedSize && selectedColor) ? 'Please select a size.' : 
+                                       (selectedSize && !selectedColor) ? 'Please select a colour.' : 'Please select a size and colour.';
+                errorMsg.classList.add('show');
+                clearTimeout(errorTimeout);
+                errorTimeout = setTimeout(() => errorMsg.classList.remove('show'), 4000);
+                return;
+            }
+            errorMsg.classList.remove('show');
+
+            const activeSwatchSrc = document.querySelector('.color-swatch.active').getAttribute('data-image');
+            const existingIndex = cart.findIndex(i => i.name === 'Duality Sports Bra' && i.size === selectedSize && i.color === selectedColor);
+            
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += currentQty;
+            } else {
+                cart.push({ name: 'Duality Sports Bra', price: 40.00, size: selectedSize, color: selectedColor, qty: currentQty, img: activeSwatchSrc });
+            }
+
+            saveData();
+
+            const originalContent = addToBagBtn.innerHTML;
+            addToBagBtn.innerHTML = '<span>ADDED!</span><i class="fa-solid fa-check"></i>';
+            addToBagBtn.style.backgroundColor = 'var(--gold-accent)';
+            addToBagBtn.style.color = 'var(--bg-dark)';
+            
+            setTimeout(() => {
+                addToBagBtn.innerHTML = originalContent;
+                addToBagBtn.style.backgroundColor = '';
+                addToBagBtn.style.color = '';
+            }, 1500);
+
+            renderCart();
+        });
+
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const openCartBtn = document.getElementById('open-cart');
+        const closeCartBtn = document.getElementById('close-cart');
+        
+        const favDrawer = document.getElementById('fav-drawer');
+        const favOverlay = document.getElementById('fav-overlay');
+        const openFavBtn = document.getElementById('open-favs');
+        const closeFavBtn = document.getElementById('close-favs');
+
+        function toggleCart() { cartDrawer.classList.toggle('open'); cartOverlay.classList.toggle('show'); renderCart(); }
+        function toggleFavs() { favDrawer.classList.toggle('open'); favOverlay.classList.toggle('show'); renderFavs(); }
+
+        openCartBtn.addEventListener('click', (e) => { e.preventDefault(); toggleCart(); });
+        closeCartBtn.addEventListener('click', toggleCart);
+        cartOverlay.addEventListener('click', toggleCart);
+
+        openFavBtn.addEventListener('click', (e) => { e.preventDefault(); toggleFavs(); });
+        closeFavBtn.addEventListener('click', toggleFavs);
+        favOverlay.addEventListener('click', toggleFavs);
+
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartTotalRow = document.getElementById('cart-total-row');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const favItemsContainer = document.getElementById('fav-items-container');
+
+        function removeCartItem(index) { cart.splice(index, 1); saveData(); renderCart(); }
+        function removeFavItem(id) {
+            favs = favs.filter(item => item.id !== id);
+            if (id === 'duality-bra') {
+                isFavourited = false;
+                favUnliked.style.display = 'block';
+                favLiked.style.display = 'none';
+            }
+            saveData();
+            renderFavs();
+        }
+
+        function renderCart() {
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="empty-cart-msg">Your bag is empty.</p>';
+                cartTotalRow.style.display = 'none';
+                return;
+            }
+            let totalSum = 0;
+            cartItemsContainer.innerHTML = cart.map((item, index) => {
+                totalSum += (item.price * item.qty);
+                return `
+                <div class="cart-item-wrapper">
+                    <div class="cart-item-action">
+                        <button type="button" class="remove-btn" onclick="removeCartItem(${index})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="cart-item swipeable">
+                        <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <p class="cart-variant">Size: <strong>${item.size}</strong> | Qty: <strong>${item.qty}</strong></p>
+                            <p class="cart-variant">Colour: <strong>${item.color}</strong></p>
+                            <p class="cart-price">$${(item.price * item.qty).toFixed(2)} SGD</p>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+            cartTotalRow.style.display = 'flex';
+            cartTotalPrice.textContent = '$' + totalSum.toFixed(2) + ' SGD';
+            initSwipeables();
+        }
+
+        function renderFavs() {
+            if (favs.length === 0) {
+                favItemsContainer.innerHTML = '<p class="empty-cart-msg">Your favourites list is empty.</p>';
+                return;
+            }
+            favItemsContainer.innerHTML = favs.map(item => `
+                <div class="cart-item-wrapper">
+                    <div class="cart-item-action">
+                        <button type="button" class="remove-btn" onclick="removeFavItem('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <a href="product-01.html" class="cart-item swipeable fav-link">
+                        <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <p class="cart-price">${item.price}</p>
+                            <p class="click-to-view">Click to view listing &rarr;</p>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+            initSwipeables();
+        }
+
+        function initSwipeables() {
+            const swipeables = document.querySelectorAll('.swipeable');
+            swipeables.forEach(el => {
+                let startX = 0; let currentX = 0;
+                el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+                el.addEventListener('touchmove', e => {
+                    currentX = e.touches[0].clientX;
+                    let diff = startX - currentX;
+                    if (diff > 0 && diff < 80) { el.style.transform = `translateX(-${diff}px)`; }
+                }, {passive: true});
+                el.addEventListener('touchend', e => {
+                    let diff = startX - currentX;
+                    if (diff > 40) el.style.transform = `translateX(-80px)`;
+                    else el.style.transform = `translateX(0)`;
+                });
+            });
+        }
+
+        // Stripe Checkout Logic (Talks to server.js on 127.0.0.1)
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', async () => {
+                if (cart.length === 0) return;
+                
+                checkoutBtn.textContent = 'REDIRECTING...';
+                checkoutBtn.style.opacity = '0.7';
+
+                try {
+                    const response = await fetch('http://127.0.0.1:4242/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cart: cart })
+                    });
+                    
+                    const session = await response.json();
+                    
+                    if (session.url) {
+                        window.location.href = session.url; // Redirect to Stripe
+                    } else {
+                        checkoutBtn.textContent = 'SERVER ERROR';
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    checkoutBtn.textContent = 'CHECKOUT FAILED';
+                    setTimeout(() => { checkoutBtn.textContent = 'CHECKOUT'; checkoutBtn.style.opacity = '1'; }, 2000);
+                }
+            });
+        }
+
+        updateBadges();
+    </script>
+</body>
+</html>
