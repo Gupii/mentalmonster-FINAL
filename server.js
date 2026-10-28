@@ -15,9 +15,17 @@ app.post('/create-checkout-session', async (req, res) => {
     try {
         const { cart } = req.body;
 
+        // Generates a random 6-digit order ID (e.g., MM-482910)
+        const orderId = 'MM-' + Math.floor(100000 + Math.random() * 900000);
+
+        let cartTotalInCents = 0;
+
         const lineItems = cart.map(item => {
             const storeItem = storeItems.get(item.name);
             if (!storeItem) throw new Error(`Product ${item.name} not found.`);
+            
+            // Calculate cart total to determine shipping
+            cartTotalInCents += storeItem.priceInCents * item.qty;
 
             return {
                 price_data: {
@@ -33,12 +41,22 @@ app.post('/create-checkout-session', async (req, res) => {
             };
         });
 
+        // If cart total is >= $120 (12000 cents), standard shipping is 0
+        const standardShippingCost = cartTotalInCents >= 12000 ? 0 : 500;
+        const standardShippingName = cartTotalInCents >= 12000 ? 'Free Standard Delivery (Orders over $120)' : 'Standard Delivery';
+
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items: lineItems,
             
+            // Turns on the promo code box on the Stripe checkout page
+            allow_promotion_codes: true,
+            
+            client_reference_id: orderId, 
+            
             payment_intent_data: {
                 metadata: {
+                    order_id: orderId,
                     order_summary: cart.map(item => `${item.qty}x ${item.name} (Size: ${item.size}, Colour: ${item.color})`).join(' | ')
                 }
             },
@@ -49,8 +67,8 @@ app.post('/create-checkout-session', async (req, res) => {
                 {
                     shipping_rate_data: {
                         type: 'fixed_amount',
-                        fixed_amount: { amount: 500, currency: 'sgd' },
-                        display_name: 'Standard Delivery',
+                        fixed_amount: { amount: standardShippingCost, currency: 'sgd' },
+                        display_name: standardShippingName,
                         delivery_estimate: { minimum: { unit: 'business_day', value: 3 }, maximum: { unit: 'business_day', value: 5 } }
                     },
                 },
@@ -63,9 +81,8 @@ app.post('/create-checkout-session', async (req, res) => {
                     },
                 },
             ],
-            // Updated to your live Vercel domain
-            success_url: 'https://mentalmonster-final.vercel.app/success.html', 
-            cancel_url: 'https://mentalmonster-final.vercel.app/index.html',
+            success_url: `https://mentalmonster.shop/success.html?order=${orderId}`, 
+            cancel_url: 'https://mentalmonster.shop/index.html',
         });
 
         res.json({ url: session.url });
