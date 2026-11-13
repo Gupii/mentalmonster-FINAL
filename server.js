@@ -63,6 +63,20 @@ app.post('/create-checkout-session', async (req, res) => {
 
             phone_number_collection: { enabled: true },
             shipping_address_collection: { allowed_countries: ['SG'] },
+            
+            // INJECTED: Mandatory custom field for Unit Number
+            custom_fields: [
+                {
+                    key: 'unit_number',
+                    label: {
+                        type: 'custom',
+                        custom: 'Unit Number (e.g., #04-123)'
+                    },
+                    type: 'text',
+                    optional: false
+                }
+            ],
+
             shipping_options: [
                 {
                     shipping_rate_data: {
