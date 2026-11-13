@@ -116,9 +116,11 @@ header {
 /* --- PRODUCT PAGE UI --- */
 .product-section {
     display: grid; grid-template-columns: 1fr 0.9fr; gap: 4rem;
-    align-items: center; margin: 3rem 0 6rem; position: relative; z-index: 5;
+    align-items: center; margin: 3rem 0 6rem; position: relative; 
+    z-index: 50; /* Punches through invisible logo box preventing dead clicks */
 }
 
+/* UPDATED IMAGE CONTAINER LOGIC */
 .listing-image-container {
     position: relative; 
     width: 100%; max-width: 550px; margin: 0 auto;
@@ -126,23 +128,46 @@ header {
     border: 1px solid var(--card-border);
     box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
     display: flex; justify-content: center; align-items: center;
-    padding: 0.5rem; aspect-ratio: 1 / 1.1; 
+    padding: 1rem; 
+    aspect-ratio: 1 / 1.1; /* Keeps the outer box locked down so layout never jumps */
 }
-.transparent-product-img { width: 95%; height: 95%; object-fit: contain; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.6)); transition: opacity 0.2s ease; }
 
-/* Favourites Button Overlay */
+.transparent-product-img { 
+    width: 100%; height: 100%; 
+    object-fit: contain; /* Forces images to scale properly inside the box without ever cropping */
+    filter: drop-shadow(0 15px 20px rgba(0,0,0,0.6)); 
+    transition: opacity 0.6s ease-in-out; /* Ultra smooth crossfading */
+}
+
+/* --- CSS CROSSFADE FAVOURITES BUTTON --- */
 .image-fav-btn {
     position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
     background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(4px);
     border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.4);
     display: flex; justify-content: center; align-items: center; cursor: pointer;
-    z-index: 15; transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 9999; transition: transform 0.2s ease, background 0.2s ease;
 }
 .image-fav-btn:hover { background: rgba(255, 255, 255, 0.3); }
-.image-fav-btn img { width: 20px; height: 20px; object-fit: contain; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.image-fav-btn.animating img { animation: heartPop 0.4s ease; }
-@keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
 
+/* Stacks both images exactly on top of each other */
+.image-fav-btn img { 
+    position: absolute; width: 20px; height: 20px; object-fit: contain; 
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Default unliked state (Grey kiss visible, Red kiss invisible) */
+.fav-icon-unliked { opacity: 1; transform: scale(1); }
+.fav-icon-liked { opacity: 0; transform: scale(0.5); }
+
+/* Toggled liked state (Grey kiss fades out, Red kiss fades in) */
+.image-fav-btn.active-fav .fav-icon-unliked { opacity: 0; transform: scale(1.5); }
+.image-fav-btn.active-fav .fav-icon-liked { opacity: 1; transform: scale(1); }
+
+/* Animation pop on click */
+.image-fav-btn.animating { animation: heartPop 0.4s ease; }
+@keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+/* Rest of Product UI */
 .product-details { display: flex; flex-direction: column; align-items: flex-start; }
 .breadcrumb { font-family: var(--font-ui); font-size: 0.65rem; letter-spacing: 4px; margin-bottom: 2.5rem; color: var(--gold-accent); opacity: 0.9; text-transform: uppercase; font-weight: 500; }
 
@@ -196,7 +221,7 @@ header {
 }
 .btn-add-bag:hover { background-color: var(--gold-accent); }
 
-/* --- CART & FAVOURITES DRAWER UI (Cream Colored) --- */
+/* --- CART & FAVOURITES DRAWER UI --- */
 .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 998; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
 .cart-overlay.show { opacity: 1; visibility: visible; }
 
@@ -215,22 +240,31 @@ header {
 .cart-items { flex: 1; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; }
 .empty-cart-msg { text-align: center; margin-top: 2rem; font-style: italic; opacity: 0.7; }
 
-/* SWIPE-TO-REMOVE LOGIC */
+/* SWIPE-TO-REMOVE OVERLAY LOGIC */
 .cart-item-wrapper {
-    position: relative; width: 100%; overflow: hidden;
+    position: relative; width: 100%; overflow: hidden; /* Hides the off-screen red block */
     border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 1.5rem;
+    display: flex; 
 }
-.cart-item-action {
-    position: absolute; top: 0; right: 0; height: 100%; width: 80px;
-    display: flex; justify-content: center; align-items: center; background: #ff4c4c;
-}
-.remove-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 1rem; }
-.cart-item.swipeable {
-    position: relative; background: #F9F6F0; z-index: 2;
-    transition: transform 0.3s ease; text-decoration: none; color: inherit;
+
+/* The actual cart item stays perfectly still */
+.cart-item {
     display: flex; gap: 1.5rem; align-items: center; padding-bottom: 1.5rem; width: 100%;
+    background: #F9F6F0; z-index: 2; text-decoration: none; color: inherit;
 }
-@media (hover: hover) { .cart-item-wrapper:hover .cart-item.swipeable { transform: translateX(-80px); } }
+
+/* The red block sits off to the right, overlapping the content when triggered */
+.cart-item-action {
+    position: absolute; top: 0; right: -80px; height: calc(100% - 1.5rem); width: 80px;
+    display: flex; justify-content: center; align-items: center; background: #ff4c4c;
+    transition: transform 0.3s ease; z-index: 10; border-radius: 4px 0 0 4px;
+}
+.remove-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; width: 100%; height: 100%; }
+
+/* Desktop Hover: Slide the red trash block IN over the static item */
+@media (hover: hover) { 
+    .cart-item-wrapper:hover .cart-item-action { transform: translateX(-80px); } 
+}
 
 /* Drawer Image Properly Scaled */
 .cart-item-img {
@@ -244,11 +278,30 @@ header {
 .click-to-view { font-size: 0.65rem; color: var(--gold-accent); margin-top: 0.5rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
 .fav-link:hover h4 { color: #872B2D; }
 
+/* IN-CART QTY EDITOR */
+.cart-qty-editor {
+    display: flex; align-items: center; gap: 12px; margin: 6px 0;
+}
+.qty-edit-btn {
+    background: transparent; border: 1px solid rgba(0,0,0,0.2); cursor: pointer;
+    padding: 2px 8px; border-radius: 4px; color: #120406; transition: background 0.2s;
+}
+.qty-edit-btn:hover { background: rgba(0,0,0,0.05); }
+.qty-edit-val { font-weight: 600; min-width: 12px; text-align: center; color: #120406; font-size: 0.85rem; }
+
+/* PRODUCT LINKS IN CART */
+.go-to-product-link {
+    display: inline-block; margin-top: 4px; font-size: 0.75rem; color: #872B2D; 
+    text-decoration: underline; text-underline-offset: 2px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.go-to-product-link:hover { color: #5A5444; }
+
 .cart-footer { margin-top: 2rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1.5rem; }
 .checkout-btn {
-    width: 100%; padding: 1.25rem; background-color: #120406; color: #F9F6F0;
-    border: none; font-family: var(--font-ui); font-size: 0.85rem; letter-spacing: 3px;
-    font-weight: 600; cursor: pointer; transition: background 0.3s ease;
+    width: 100%; padding: 1.25rem 0.5rem; background-color: #120406; color: #F9F6F0;
+    border: none; font-family: var(--font-ui); font-size: 0.85rem; letter-spacing: 2px;
+    font-weight: 600; cursor: pointer; transition: background 0.3s ease; line-height: 1.4;
 }
 .checkout-btn:hover { background-color: #310811; }
 
@@ -295,8 +348,21 @@ footer { width: 100%; background-color: #050505; border-top: 1px solid #1a1a1a; 
         align-items: center; 
     }
     
-    .listing-image-container { padding: 0; aspect-ratio: auto; height: 100%; } 
-    .transparent-product-img { width: 100%; height: auto; padding: 0.5rem; transform: scale(1.15); margin-top: 0.5rem; }
+    /* NEW MOBILE IMAGE CONTAINER LOGIC - Prevents layout jumping */
+    .listing-image-container { 
+        padding: 0; 
+        aspect-ratio: 1 / 1.1; 
+        height: auto; 
+        width: 100%;
+    } 
+    .transparent-product-img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: contain; /* Keeps wide & tall images perfectly scaled without cropping */
+        padding: 0.5rem; 
+        transform: none; 
+        margin-top: 0; 
+    }
     
     .image-fav-btn { top: 8px; right: 8px; width: 30px; height: 30px; }
     .image-fav-btn img { width: 16px; height: 16px; }

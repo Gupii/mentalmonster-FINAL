@@ -81,7 +81,6 @@
                     </div>
                 </div>
 
-                <!-- Cleaned Velvet Armour Card (Duality entirely removed) -->
                 <a href="product-01.html" class="card velvet-card">
                     <div class="card-content bottom-aligned shadow-text">
                         <h2 class="clean-card-title" style="margin-bottom: 0;">VELVET ARMOUR</h2>
@@ -243,6 +242,16 @@
             renderFavs();
         }
 
+        function updateCartQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                removeCartItem(index);
+            } else {
+                saveData();
+                renderCart();
+            }
+        }
+
         function renderCart() {
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p class="empty-cart-msg">Your bag is empty.</p>';
@@ -254,17 +263,25 @@
                 totalSum += (item.price * item.qty);
                 return `
                 <div class="cart-item-wrapper">
-                    <div class="cart-item-action">
-                        <button type="button" class="remove-btn" onclick="removeCartItem(${index})"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="cart-item swipeable">
+                    <div class="cart-item">
                         <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
                         <div class="cart-item-info">
                             <h4>${item.name}</h4>
-                            <p class="cart-variant">Size: <strong>${item.size}</strong> | Qty: <strong>${item.qty}</strong></p>
-                            <p class="cart-variant">Colour: <strong>${item.color}</strong></p>
+                            <p class="cart-variant">Size: <strong>${item.size}</strong> | Colour: <strong>${item.color}</strong></p>
+                            
+                            <div class="cart-qty-editor">
+                                <button type="button" class="qty-edit-btn" onclick="updateCartQty(${index}, -1)"><i class="fa-solid fa-minus"></i></button>
+                                <span class="qty-edit-val">${item.qty}</span>
+                                <button type="button" class="qty-edit-btn" onclick="updateCartQty(${index}, 1)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+
                             <p class="cart-price">$${(item.price * item.qty).toFixed(2)} SGD</p>
+                            <a href="product-01.html" class="go-to-product-link">Go to product &rarr;</a>
                         </div>
+                    </div>
+                    <!-- Overlapping Trash Overlay -->
+                    <div class="cart-item-action">
+                        <button type="button" class="remove-btn" onclick="removeCartItem(${index})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `}).join('');
@@ -280,10 +297,7 @@
             }
             favItemsContainer.innerHTML = favs.map(item => `
                 <div class="cart-item-wrapper">
-                    <div class="cart-item-action">
-                        <button type="button" class="remove-btn" onclick="removeFavItem('${item.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <a href="product-01.html" class="cart-item swipeable fav-link">
+                    <a href="product-01.html" class="cart-item fav-link">
                         <div class="cart-item-img"><img src="${item.img}" alt="${item.name}"></div>
                         <div class="cart-item-info">
                             <h4>${item.name}</h4>
@@ -291,26 +305,35 @@
                             <p class="click-to-view">Click to view listing &rarr;</p>
                         </div>
                     </a>
+                    <!-- Overlapping Trash Overlay -->
+                    <div class="cart-item-action">
+                        <button type="button" class="remove-btn" onclick="removeFavItem('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>
             `).join('');
             initSwipeables();
         }
 
         function initSwipeables() {
-            const swipeables = document.querySelectorAll('.swipeable');
-            swipeables.forEach(el => {
+            const wrappers = document.querySelectorAll('.cart-item-wrapper');
+            wrappers.forEach(wrapper => {
+                const action = wrapper.querySelector('.cart-item-action');
+                if (!action) return;
                 let startX = 0;
-                let currentX = 0;
-                el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
-                el.addEventListener('touchmove', e => {
-                    currentX = e.touches[0].clientX;
-                    let diff = startX - currentX;
-                    if (diff > 0 && diff < 80) { el.style.transform = `translateX(-${diff}px)`; }
+                wrapper.addEventListener('touchstart', e => { 
+                    startX = e.touches[0].clientX; 
+                    action.style.transition = 'none'; 
                 }, {passive: true});
-                el.addEventListener('touchend', e => {
+                wrapper.addEventListener('touchmove', e => {
+                    let currentX = e.touches[0].clientX;
                     let diff = startX - currentX;
-                    if (diff > 40) el.style.transform = `translateX(-80px)`;
-                    else el.style.transform = `translateX(0)`;
+                    if (diff > 0 && diff <= 80) { action.style.transform = `translateX(-${diff}px)`; }
+                }, {passive: true});
+                wrapper.addEventListener('touchend', e => {
+                    action.style.transition = 'transform 0.3s ease';
+                    let diff = startX - e.changedTouches[0].clientX;
+                    if (diff > 40) action.style.transform = `translateX(-80px)`;
+                    else action.style.transform = `translateX(0)`;
                 });
             });
         }
@@ -318,13 +341,17 @@
         // Init on load
         updateBadges();
 
-        // Stripe Live Checkout Integration
+        // UPDATED: Stripe Checkout Integration with 15s Disclaimer
         const checkoutBtns = document.querySelectorAll('.checkout-btn');
         checkoutBtns.forEach(btn => {
             btn.addEventListener('click', async () => {
                 if (cart.length === 0) return;
                 
-                btn.textContent = 'PROCESSING...';
+                btn.innerHTML = 'PROCESSING...';
+                
+                const processingTimer = setTimeout(() => {
+                    btn.innerHTML = 'PROCESSING...<br><span style="font-size: 0.65rem; opacity: 0.8; font-weight: 400; text-transform: lowercase; letter-spacing: 1px;">(give us a while, this usually takes around 15 seconds!)</span>';
+                }, 3000);
                 
                 try {
                     const response = await fetch('https://mentalmonster-backend.onrender.com/create-checkout-session', {
@@ -336,14 +363,16 @@
                     const data = await response.json();
                     
                     if (data.url) {
-                        window.location.href = data.url; // Redirects to Stripe
+                        window.location.href = data.url; 
                     } else {
+                        clearTimeout(processingTimer);
                         console.error('Stripe Error:', data.error);
-                        btn.textContent = 'CHECKOUT FAILED';
+                        btn.innerHTML = 'CHECKOUT FAILED';
                     }
                 } catch (e) {
+                    clearTimeout(processingTimer);
                     console.error('Network Error:', e);
-                    btn.textContent = 'SERVER ERROR';
+                    btn.innerHTML = 'SERVER ERROR';
                 }
             });
         });
