@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mental Monster Receipt</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #160407; font-family: Arial, sans-serif; color: #eaddd3;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #160407; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="100%" max-width="600px" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #0b0304; border: 1px solid rgba(234, 221, 211, 0.15); border-radius: 4px;">
+                    <tr>
+                        <td align="center" style="padding: 40px 20px 20px;">
+                            <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1792925301/logo_website_nbg.png" alt="Mental Monster" style="height: 80px; width: auto; display: block;">
+                            <div style="height: 1px; width: 40px; background-color: #f2e2c4; margin: 20px auto 0; opacity: 0.6;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px 40px;">
+                            <h1 style="font-size: 24px; font-weight: normal; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;">Order Confirmed.</h1>
+                            <p style="font-size: 14px; line-height: 1.6; opacity: 0.8; letter-spacing: 0.5px;">
+                                Hey {{customer_name}},<br><br>
+                                Your Velvet Armour order has been secured. We are processing it now and will send another update once it ships.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 40px 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid rgba(234, 221, 211, 0.15); padding-top: 20px;">
+                                {{cart_items_html}}
+                            </table>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid rgba(234, 221, 211, 0.15); margin-top: 20px; padding-top: 20px;">
+                                <tr>
+                                    <td align="right" style="font-size: 12px; letter-spacing: 1px; opacity: 0.8; padding-bottom: 8px;">SUBTOTAL</td>
+                                    <td align="right" style="font-size: 14px; padding-bottom: 8px;">{{subtotal}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" style="font-size: 12px; letter-spacing: 1px; opacity: 0.8; padding-bottom: 8px;">SHIPPING</td>
+                                    <td align="right" style="font-size: 14px; padding-bottom: 8px;">{{shipping_cost}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" style="font-size: 14px; letter-spacing: 2px; font-weight: bold; color: #f2e2c4; padding-top: 10px;">TOTAL</td>
+                                    <td align="right" style="font-size: 18px; font-weight: bold; color: #f2e2c4; padding-top: 10px;">{{total}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 30px 40px; background-color: #050505; border-top: 1px solid #1a1a1a;">
+                            <p style="font-size: 10px; letter-spacing: 1px; opacity: 0.5; margin: 0 0 10px;">MENTALMONSTER PTE. LTD.</p>
+                            <p style="font-size: 10px; letter-spacing: 1px; opacity: 0.5; margin: 0;">
+                                <a href="mailto:inquiries@mentalmonster.shop" style="color: #eaddd3; text-decoration: none;">inquiries@mentalmonster.shop</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
