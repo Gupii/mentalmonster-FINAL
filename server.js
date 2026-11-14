@@ -19,9 +19,8 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     let event;
 
     try {
-        // Stripe checks the signature to ensure hackers aren't sending fake payments
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.whsec_labk33Gsfgs46IbAq9AVVo8WlbrZX07e
-);
+        // Stripe checks the signature. Secret is safely hardcoded as a text string here.
+        event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_labk33Gsfgs46IbAq9AVVo8WlbrZX07e');
     } catch (err) {
         console.error('Webhook signature verification failed.', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
