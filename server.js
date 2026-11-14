@@ -26,10 +26,12 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     }
 
     if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
+        const rawSession = event.data.object;
 
         try {
+            const session = await stripe.checkout.sessions.retrieve(rawSession.id);
             const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+            
             const formatMoney = (cents) => `$${(cents / 100).toFixed(2)}`;
             
             const orderNumber = session.client_reference_id || 'MM-UNKNOWN';
@@ -38,7 +40,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             const total = formatMoney(session.amount_total);
             const shippingCost = formatMoney(session.total_details?.amount_shipping || 0);
 
-            // Handle Promo Codes / Discounts
             const discountAmountInCents = session.total_details?.amount_discount || 0;
             let discountHtmlRow = '';
             let telegramDiscountText = '';
@@ -53,9 +54,11 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                 telegramDiscountText = `\nDiscount: -${formattedDiscount}`;
             }
 
-            // Extract Shipping Details Robustly (catches Apple Pay / 100% Promo edge cases)
-            const shippingName = session.shipping_details?.name || session.shipping?.name || session.customer_details?.name || customerName;
-            const addr = session.shipping_details?.address || session.shipping?.address || session.customer_details?.address;
+            // Extract Shipping Details (Now checks collected_information first)
+            const collectedShipping = session.collected_information?.shipping_details;
+            
+            const shippingName = collectedShipping?.name || session.shipping_details?.name || session.customer_details?.name || customerName;
+            const addr = collectedShipping?.address || session.shipping_details?.address || session.customer_details?.address;
             
             let shippingAddressHtml = 'No shipping details provided';
             let plainTextAddress = 'No shipping details provided';
@@ -112,7 +115,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                 .replace('{{discount_row}}', discountHtmlRow)
                 .replace('{{total}}', total);
 
-            // Phase 1: Send Email
             const { error } = await resend.emails.send({
                 from: 'Mental Monster <orders@mentalmonster.shop>',
                 to: session.customer_details.email,
@@ -123,7 +125,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             if (error) console.error('Resend Error:', error);
             else console.log(`Receipt #${orderNumber} sent successfully to:`, session.customer_details.email);
 
-            // Phase 2: Send Telegram Alert
             try {
                 const tgToken = '9122988639:AAH_qYI_qvGnHGN03L6OZHz9zpkaqPAbApY';
                 const tgChatId = '5677057623';
