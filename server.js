@@ -19,25 +19,55 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     let event;
 
     try {
-        // Stripe checks the signature. Secret is safely hardcoded as a text string here.
         event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_labk33Gsfgs46IbAq9AVVo8WlbrZX07e');
     } catch (err) {
         console.error('Webhook signature verification failed.', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
-    // When the payment officially clears
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
 
         try {
-            // Ask Stripe for the specific items the customer bought
             const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-            
-            // Helper function to format Stripe's cents into standard dollar strings ($40.00)
             const formatMoney = (cents) => `$${(cents / 100).toFixed(2)}`;
             
-            // Build the HTML table rows for the purchased items
+            // Extract the generated Order ID
+            const orderNumber = session.client_reference_id || 'MM-UNKNOWN';
+            const customerName = session.customer_details.name || 'Athlete';
+            const subtotal = formatMoney(session.amount_subtotal);
+            const total = formatMoney(session.amount_total);
+            const shippingCost = formatMoney(session.total_details.amount_shipping);
+
+            // Extract Shipping Details & Custom Unit Number
+            const shipping = session.shipping_details;
+            let shippingAddressHtml = 'No shipping details provided';
+            let plainTextAddress = 'No shipping details provided';
+
+            if (shipping && shipping.address) {
+                const addr = shipping.address;
+                const name = shipping.name || customerName;
+                
+                let unitNumber = '';
+                if (session.custom_fields) {
+                    const unitField = session.custom_fields.find(f => f.key === 'unit_number');
+                    if (unitField && unitField.text && unitField.text.value) {
+                        unitNumber = unitField.text.value;
+                    }
+                }
+                
+                // Formats address for the HTML Email
+                shippingAddressHtml = `
+                    <strong>${name}</strong><br>
+                    ${addr.line1} ${unitNumber ? '<br>Unit ' + unitNumber : ''}<br>
+                    ${addr.line2 ? addr.line2 + '<br>' : ''}
+                    ${addr.postal_code}, ${addr.country}
+                `;
+
+                // Formats address for the Telegram Bot
+                plainTextAddress = `${name}\n${addr.line1} ${unitNumber ? '(Unit ' + unitNumber + ')' : ''}\n${addr.line2 ? addr.line2 + '\n' : ''}${addr.postal_code}, ${addr.country}`;
+            }
+
             let cartItemsHtml = '';
             lineItems.data.forEach(item => {
                 cartItemsHtml += `
@@ -51,50 +81,39 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                 </tr>`;
             });
 
-            // Load your email-template.html file
             const templatePath = path.join(__dirname, 'email-template.html');
             let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
 
-            // Find and replace the {{target_brackets}} with the actual Stripe data
-            const customerName = session.customer_details.name || 'Athlete';
-            const subtotal = formatMoney(session.amount_subtotal);
-            const total = formatMoney(session.amount_total);
-            const shippingCost = formatMoney(session.total_details.amount_shipping);
-
             htmlTemplate = htmlTemplate
+                .replace('{{order_number}}', orderNumber)
+                .replace('{{shipping_address}}', shippingAddressHtml)
                 .replace('{{customer_name}}', customerName)
                 .replace('{{cart_items_html}}', cartItemsHtml)
                 .replace('{{subtotal}}', subtotal)
                 .replace('{{shipping_cost}}', shippingCost)
                 .replace('{{total}}', total);
 
-            // ---------------------------------------------------------
-            // PHASE 1: Send Customer Email via Resend
-            // ---------------------------------------------------------
-            const { data, error } = await resend.emails.send({
+            // Send Email to Customer
+            const { error } = await resend.emails.send({
                 from: 'Mental Monster <orders@mentalmonster.shop>',
                 to: session.customer_details.email,
-                subject: 'Order Confirmed - Mental Monster',
+                subject: `Order Confirmed: #${orderNumber} - Mental Monster`,
                 html: htmlTemplate,
             });
 
             if (error) {
                 console.error('Resend Error:', error);
             } else {
-                console.log('Receipt sent successfully to:', session.customer_details.email);
+                console.log(`Receipt #${orderNumber} sent successfully to:`, session.customer_details.email);
             }
 
-            // ---------------------------------------------------------
-            // PHASE 2: Send Admin Alert via Telegram Bot
-            // ---------------------------------------------------------
+            // Send Alert to Telegram Bot
             try {
                 const tgToken = '9122988639:AAH_qYI_qvGnHGN03L6OZHz9zpkaqPAbApY';
                 const tgChatId = '5677057623';
-                
-                // Format the items nicely for a text message
                 const orderSummary = lineItems.data.map(item => `${item.quantity}x ${item.description}`).join('\n');
                 
-                const textMessage = `🚨 NEW ORDER: ${total} 🚨\n\nName: ${customerName}\nEmail: ${session.customer_details.email}\n\nItems:\n${orderSummary}`;
+                const textMessage = `🚨 NEW ORDER: ${orderNumber} 🚨\nTotal: ${total}\nName: ${customerName}\nEmail: ${session.customer_details.email}\n\n📍 SHIPPING TO:\n${plainTextAddress}\n\n👕 ITEMS:\n${orderSummary}`;
 
                 await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
                     method: 'POST',
@@ -104,7 +123,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                         text: textMessage
                     })
                 });
-                console.log("Telegram alert fired.");
             } catch (tgErr) {
                 console.error("Telegram alert failed:", tgErr);
             }
@@ -130,26 +148,21 @@ const storeItems = new Map([
 app.post('/create-checkout-session', async (req, res) => {
     try {
         const { cart } = req.body;
-
-        // Generates a random 6-digit order ID (e.g., MM-482910)
         const orderId = 'MM-' + Math.floor(100000 + Math.random() * 900000);
-
         let cartTotalInCents = 0;
 
         const lineItems = cart.map(item => {
             const storeItem = storeItems.get(item.name);
             if (!storeItem) throw new Error(`Product ${item.name} not found.`);
-            
-            // Calculate cart total to determine shipping
             cartTotalInCents += storeItem.priceInCents * item.qty;
 
             return {
                 price_data: {
                     currency: 'sgd',
                     product_data: {
-                        name: item.name,
+                        // Injected Size and Colour directly into the name so Stripe renders it everywhere
+                        name: `${item.name} (Size: ${item.size}, Colour: ${item.color})`,
                         images: [item.img],
-                        description: `Size: ${item.size} | Colour: ${item.color}`, 
                     },
                     unit_amount: storeItem.priceInCents,
                 },
