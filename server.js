@@ -68,7 +68,9 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                 .replace('{{shipping_cost}}', shippingCost)
                 .replace('{{total}}', total);
 
-            // Fire the email via Resend
+            // ---------------------------------------------------------
+            // PHASE 1: Send Customer Email via Resend
+            // ---------------------------------------------------------
             const { data, error } = await resend.emails.send({
                 from: 'Mental Monster <orders@mentalmonster.shop>',
                 to: session.customer_details.email,
@@ -81,6 +83,32 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             } else {
                 console.log('Receipt sent successfully to:', session.customer_details.email);
             }
+
+            // ---------------------------------------------------------
+            // PHASE 2: Send Admin Alert via Telegram Bot
+            // ---------------------------------------------------------
+            try {
+                const tgToken = '9122988639:AAH_qYI_qvGnHGN03L6OZHz9zpkaqPAbApY';
+                const tgChatId = '5677057623';
+                
+                // Format the items nicely for a text message
+                const orderSummary = lineItems.data.map(item => `${item.quantity}x ${item.description}`).join('\n');
+                
+                const textMessage = `🚨 NEW ORDER: ${total} 🚨\n\nName: ${customerName}\nEmail: ${session.customer_details.email}\n\nItems:\n${orderSummary}`;
+
+                await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: tgChatId,
+                        text: textMessage
+                    })
+                });
+                console.log("Telegram alert fired.");
+            } catch (tgErr) {
+                console.error("Telegram alert failed:", tgErr);
+            }
+
         } catch (err) {
             console.error('Error processing webhook event:', err);
         }
@@ -129,17 +157,13 @@ app.post('/create-checkout-session', async (req, res) => {
             };
         });
 
-        // If cart total is >= $120 (12000 cents), standard shipping is 0
         const standardShippingCost = cartTotalInCents >= 12000 ? 0 : 500;
         const standardShippingName = cartTotalInCents >= 12000 ? 'Free Standard Delivery (Orders over $120)' : 'Standard Delivery';
 
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items: lineItems,
-            
-            // Turns on the promo code box on the Stripe checkout page
             allow_promotion_codes: true,
-            
             client_reference_id: orderId, 
             
             payment_intent_data: {
@@ -152,7 +176,6 @@ app.post('/create-checkout-session', async (req, res) => {
             phone_number_collection: { enabled: true },
             shipping_address_collection: { allowed_countries: ['SG'] },
             
-            // INJECTED: Mandatory custom field for Unit Number
             custom_fields: [
                 {
                     key: 'unit_number',
