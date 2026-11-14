@@ -12,7 +12,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 app.use(cors());
 
 // ==========================================
-// 1. STRIPE WEBHOOK (MUST BE BEFORE express.json)
+// 1. STRIPE WEBHOOK
 // ==========================================
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
@@ -21,7 +21,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_labk33Gsfgs46IbAq9AVVo8WlbrZX07e');
     } catch (err) {
-        console.error('Webhook signature verification failed.', err.message);
+        console.error('Webhook signature failed.', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -32,22 +32,35 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
             const formatMoney = (cents) => `$${(cents / 100).toFixed(2)}`;
             
-            // Extract the generated Order ID
             const orderNumber = session.client_reference_id || 'MM-UNKNOWN';
-            const customerName = session.customer_details.name || 'Athlete';
+            const customerName = session.customer_details?.name || 'Athlete';
             const subtotal = formatMoney(session.amount_subtotal);
             const total = formatMoney(session.amount_total);
-            const shippingCost = formatMoney(session.total_details.amount_shipping);
+            const shippingCost = formatMoney(session.total_details?.amount_shipping || 0);
 
-            // Extract Shipping Details & Custom Unit Number
-            const shipping = session.shipping_details;
+            // Handle Promo Codes / Discounts
+            const discountAmountInCents = session.total_details?.amount_discount || 0;
+            let discountHtmlRow = '';
+            let telegramDiscountText = '';
+            
+            if (discountAmountInCents > 0) {
+                const formattedDiscount = formatMoney(discountAmountInCents);
+                discountHtmlRow = `
+                <tr>
+                    <td align="right" style="font-size: 12px; letter-spacing: 1px; opacity: 0.8; padding-bottom: 8px;">DISCOUNT</td>
+                    <td align="right" style="font-size: 14px; padding-bottom: 8px;">-${formattedDiscount}</td>
+                </tr>`;
+                telegramDiscountText = `\nDiscount: -${formattedDiscount}`;
+            }
+
+            // Extract Shipping Details Robustly (catches Apple Pay / 100% Promo edge cases)
+            const shippingName = session.shipping_details?.name || session.shipping?.name || session.customer_details?.name || customerName;
+            const addr = session.shipping_details?.address || session.shipping?.address || session.customer_details?.address;
+            
             let shippingAddressHtml = 'No shipping details provided';
             let plainTextAddress = 'No shipping details provided';
 
-            if (shipping && shipping.address) {
-                const addr = shipping.address;
-                const name = shipping.name || customerName;
-                
+            if (addr && (addr.line1 || addr.city || addr.postal_code)) {
                 let unitNumber = '';
                 if (session.custom_fields) {
                     const unitField = session.custom_fields.find(f => f.key === 'unit_number');
@@ -56,16 +69,21 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                     }
                 }
                 
-                // Formats address for the HTML Email
+                const line1 = addr.line1 || '';
+                const line2 = addr.line2 ? `${addr.line2}<br>` : '';
+                const unitStr = unitNumber ? `<br>Unit ${unitNumber}` : '';
+                const postal = addr.postal_code || '';
+                const country = addr.country || '';
+
                 shippingAddressHtml = `
-                    <strong>${name}</strong><br>
-                    ${addr.line1} ${unitNumber ? '<br>Unit ' + unitNumber : ''}<br>
-                    ${addr.line2 ? addr.line2 + '<br>' : ''}
-                    ${addr.postal_code}, ${addr.country}
+                    <strong>${shippingName}</strong><br>
+                    ${line1}${unitStr}<br>
+                    ${line2}${postal} ${country}
                 `;
 
-                // Formats address for the Telegram Bot
-                plainTextAddress = `${name}\n${addr.line1} ${unitNumber ? '(Unit ' + unitNumber + ')' : ''}\n${addr.line2 ? addr.line2 + '\n' : ''}${addr.postal_code}, ${addr.country}`;
+                const txtLine2 = addr.line2 ? `${addr.line2}\n` : '';
+                const txtUnit = unitNumber ? `(Unit ${unitNumber})` : '';
+                plainTextAddress = `${shippingName}\n${line1} ${txtUnit}\n${txtLine2}${postal} ${country}`;
             }
 
             let cartItemsHtml = '';
@@ -91,9 +109,10 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                 .replace('{{cart_items_html}}', cartItemsHtml)
                 .replace('{{subtotal}}', subtotal)
                 .replace('{{shipping_cost}}', shippingCost)
+                .replace('{{discount_row}}', discountHtmlRow)
                 .replace('{{total}}', total);
 
-            // Send Email to Customer
+            // Phase 1: Send Email
             const { error } = await resend.emails.send({
                 from: 'Mental Monster <orders@mentalmonster.shop>',
                 to: session.customer_details.email,
@@ -101,19 +120,16 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                 html: htmlTemplate,
             });
 
-            if (error) {
-                console.error('Resend Error:', error);
-            } else {
-                console.log(`Receipt #${orderNumber} sent successfully to:`, session.customer_details.email);
-            }
+            if (error) console.error('Resend Error:', error);
+            else console.log(`Receipt #${orderNumber} sent successfully to:`, session.customer_details.email);
 
-            // Send Alert to Telegram Bot
+            // Phase 2: Send Telegram Alert
             try {
                 const tgToken = '9122988639:AAH_qYI_qvGnHGN03L6OZHz9zpkaqPAbApY';
                 const tgChatId = '5677057623';
                 const orderSummary = lineItems.data.map(item => `${item.quantity}x ${item.description}`).join('\n');
                 
-                const textMessage = `🚨 NEW ORDER: ${orderNumber} 🚨\nTotal: ${total}\nName: ${customerName}\nEmail: ${session.customer_details.email}\n\n📍 SHIPPING TO:\n${plainTextAddress}\n\n👕 ITEMS:\n${orderSummary}`;
+                const textMessage = `🚨 NEW ORDER: ${orderNumber} 🚨\nTotal: ${total}${telegramDiscountText}\nName: ${customerName}\nEmail: ${session.customer_details.email}\n\n📍 SHIPPING TO:\n${plainTextAddress}\n\n👕 ITEMS:\n${orderSummary}`;
 
                 await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
                     method: 'POST',
@@ -124,11 +140,11 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
                     })
                 });
             } catch (tgErr) {
-                console.error("Telegram alert failed:", tgErr);
+                console.error("Telegram error:", tgErr);
             }
 
         } catch (err) {
-            console.error('Error processing webhook event:', err);
+            console.error('Error processing webhook:', err);
         }
     }
 
@@ -137,7 +153,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 
 
 // ==========================================
-// 2. STANDARD MIDDLEWARE & EXISTING ROUTES
+// 2. MIDDLEWARE & ROUTES
 // ==========================================
 app.use(express.json());
 
@@ -160,7 +176,6 @@ app.post('/create-checkout-session', async (req, res) => {
                 price_data: {
                     currency: 'sgd',
                     product_data: {
-                        // Injected Size and Colour directly into the name so Stripe renders it everywhere
                         name: `${item.name} (Size: ${item.size}, Colour: ${item.color})`,
                         images: [item.img],
                     },
