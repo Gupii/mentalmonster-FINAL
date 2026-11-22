@@ -10,6 +10,74 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Transparent Native Size Chart */
+        .size-chart-section {
+            width: 100%;
+            max-width: 960px;
+            margin: 56px auto 40px;
+            padding: 0 20px;
+            box-sizing: border-box;
+            background: transparent;
+        }
+
+        .size-chart-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: transparent;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
+        .size-chart-table thead tr {
+            background-color: rgba(234, 221, 211, 0.36);
+        }
+
+        .size-chart-table th {
+            padding: 20px 10px;
+            font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            color: #160407;
+            text-transform: uppercase;
+            border: none;
+        }
+
+        .size-chart-table tbody tr {
+            background: transparent;
+            border-bottom: 1px solid rgba(234, 221, 211, 0.28);
+        }
+
+        .size-chart-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .size-chart-table td {
+            padding: 22px 10px;
+            font-size: clamp(0.9rem, 1.7vw, 1.15rem);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            color: rgba(234, 221, 211, 0.72);
+        }
+
+        @media (max-width: 768px) {
+            .size-chart-section {
+                margin: 36px auto 28px;
+                padding: 0 12px;
+            }
+
+            .size-chart-table th {
+                padding: 14px 4px;
+                letter-spacing: 0.04em;
+            }
+
+            .size-chart-table td {
+                padding: 16px 4px;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -51,7 +119,7 @@
         <main>
             <section class="product-section">
                 <!-- Product Gallery -->
-                <div class="product-gallery" style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="product-gallery">
                     <div class="listing-image-container">
                         <!-- Crossfade Favourites Button -->
                         <button type="button" class="image-fav-btn" id="image-fav-btn" aria-label="Add to favourites">
@@ -61,11 +129,6 @@
                         
                         <!-- Main Image defaults to the first promo image -->
                         <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1794584804/IMG_9937.jpg" alt="Duality Sports Bra" class="transparent-product-img" id="main-product-image">
-                    </div>
-
-                    <!-- Size Chart directly underneath the rotating gallery -->
-                    <div class="size-chart-container" style="width: 100%;">
-                        <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1795354739/size_chart_1.png" alt="Duality Sports Bra Size Chart" class="size-chart-img" style="width: 100%; height: auto; display: block;">
                     </div>
                 </div>
                 
@@ -112,6 +175,52 @@
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
+            </section>
+
+            <!-- Size Chart Section (Bottom on Desktop & Mobile) -->
+            <section class="size-chart-section" aria-label="Size Chart">
+                <table class="size-chart-table">
+                    <thead>
+                        <tr>
+                            <th>BRAS</th>
+                            <th>LENGTH</th>
+                            <th>BUST</th>
+                            <th>WAIST</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>XS/6</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>S/8</td>
+                            <td>17.5</td>
+                            <td>62</td>
+                            <td>58</td>
+                        </tr>
+                        <tr>
+                            <td>M/10</td>
+                            <td>18.5</td>
+                            <td>66</td>
+                            <td>62</td>
+                        </tr>
+                        <tr>
+                            <td>L/12</td>
+                            <td>19.5</td>
+                            <td>70</td>
+                            <td>66</td>
+                        </tr>
+                        <tr>
+                            <td>XL/14</td>
+                            <td>20.5</td>
+                            <td>74</td>
+                            <td>70</td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
         </main>
 
