@@ -51,7 +51,7 @@
         <main>
             <section class="product-section">
                 <!-- Product Gallery -->
-                <div class="product-gallery">
+                <div class="product-gallery" style="display: flex; flex-direction: column; gap: 24px;">
                     <div class="listing-image-container">
                         <!-- Crossfade Favourites Button -->
                         <button type="button" class="image-fav-btn" id="image-fav-btn" aria-label="Add to favourites">
@@ -61,6 +61,11 @@
                         
                         <!-- Main Image defaults to the first promo image -->
                         <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1794584804/IMG_9937.jpg" alt="Duality Sports Bra" class="transparent-product-img" id="main-product-image">
+                    </div>
+
+                    <!-- Size Chart directly underneath the rotating gallery -->
+                    <div class="size-chart-container" style="width: 100%;">
+                        <img src="https://res.cloudinary.com/bqio04wg/image/upload/v1795354739/size_chart_1.png" alt="Duality Sports Bra Size Chart" class="size-chart-img" style="width: 100%; height: auto; display: block;">
                     </div>
                 </div>
                 
@@ -251,7 +256,7 @@
         
         let currentSlide = 0;
         let slideTimer = null;
-        let inactivityTimer = null;
+        let fadeTimer = null;
         let isSlideshowActive = true;
 
         function showNextSlide() {
@@ -260,23 +265,24 @@
             const nextPromo = promoImages[currentSlide];
             
             mainImage.style.opacity = 0;
-            setTimeout(() => {
+            fadeTimer = setTimeout(() => {
                 if (!isSlideshowActive) return; 
-                mainImage.src = nextPromo.src; // Because of preloader, this renders instantly
+                mainImage.src = nextPromo.src;
                 mainImage.style.opacity = 1;
                 slideTimer = setTimeout(showNextSlide, nextPromo.duration);
             }, 600); 
         }
 
-        // Start initial cycle
+        // Start initial slideshow on page load
         slideTimer = setTimeout(showNextSlide, promoImages[0].duration);
 
         colorSwatches.forEach(swatch => {
             swatch.addEventListener('click', () => {
-                // Break the slideshow loop immediately
+                // Permanently stop the slideshow once any colourway is clicked
+                const wasSlideshowActive = isSlideshowActive;
                 isSlideshowActive = false;
                 clearTimeout(slideTimer);
-                clearTimeout(inactivityTimer);
+                clearTimeout(fadeTimer);
 
                 colorSwatches.forEach(s => s.classList.remove('active'));
                 swatch.classList.add('active');
@@ -284,26 +290,19 @@
                 colorLabelDisplay.textContent = selectedColor.toUpperCase();
                 
                 const newImgSrc = swatch.getAttribute('data-image');
+
+                // Avoid a pointless blink if they click the exact colour already displayed
+                if (!wasSlideshowActive && mainImage.src === newImgSrc) {
+                    mainImage.style.opacity = 1;
+                    return;
+                }
                 
-                // Crossfade to selected bra
+                // Keep smooth fade transition between all colourway product images
                 mainImage.style.opacity = 0; 
-                setTimeout(() => {
-                    mainImage.src = newImgSrc; // Instantly renders due to preloader
+                fadeTimer = setTimeout(() => {
+                    mainImage.src = newImgSrc;
                     mainImage.style.opacity = 1;
                 }, 600);
-
-                // Set 5-second inactivity timer to restart slideshow
-                inactivityTimer = setTimeout(() => {
-                    isSlideshowActive = true;
-                    currentSlide = (currentSlide + 1) % promoImages.length;
-                    
-                    mainImage.style.opacity = 0;
-                    setTimeout(() => {
-                        mainImage.src = promoImages[currentSlide].src;
-                        mainImage.style.opacity = 1;
-                        slideTimer = setTimeout(showNextSlide, promoImages[currentSlide].duration);
-                    }, 600);
-                }, 5000);
             });
         });
         // ---------------------------------------------
